@@ -311,6 +311,79 @@ class SearchBar extends React.Component {
 export default SearchBar;
 ```
 
+# 受控组件
+
+受控组件依赖于状态
+
+**大多情况推荐使用受控组件来处理表单数据**
+
+```react
+import axios from "axios";
+import React, { useState, useEffect } from "react";
+
+function ControlledComponent() {
+  const [userName, setUsername] = useState("小明");
+  function doSumbit() {
+    const data = {
+      name: userName,
+    };
+    console.log(data)
+    axios("xxx", data);
+  }
+  useEffect(() => {
+    console.log(userName);
+  }, [userName]);
+
+  return (
+    <div>
+      <input value={userName} onChange={(e) => {setUsername(e.target.value);} }></input>
+      <button onClick={doSumbit}>提交</button>
+    </div>
+  );
+}
+export default ControlledComponent;
+
+
+```
+
+
+
+# 非受控组件
+
+非受控组件
+
+1. 不受状态的控制
+
+2. 获取数据就是相当于操作DOM
+3. 容易同时集成 React 和非 React 代码
+
+```React
+import axios from "axios";
+import React, { useRef } from "react";
+
+function NotControlledComponent() {
+  const inputRef = useRef();
+  function doSumbit() {
+    const data = {
+      name: inputRef.current.value,
+    };
+    console.log(data);
+    axios("xxx", data);
+  }
+
+  return (
+    <>
+      <input ref={inputRef}></input>
+      <button onClick={doSumbit}>提交</button>
+    </>
+  );
+}
+export default NotControlledComponent;
+
+```
+
+
+
 # axios
 
 调用的时候会返回称为 Promise 的对象
@@ -492,7 +565,34 @@ dangerouslySetInerHTML 是 React 为浏览器里 DOM 提供 innerHTML 的替换�
 
 确保查询时不会发大量请求
 
+#  避免 Modal 弹跳视窗被父元素遮蔽
+
+ReactDOM.createPortal 
+
+# 不需要增加多余DOM节点
+
+React.Fragment
+
+```react
+class Columns extends React.Component {
+  render() {
+    return (
+      <React.Fragment>
+        <td>Hello</td>
+        <td>World</td>
+      </React.Fragment>
+    );
+  }
+}
+```
+
+
+
 # Redux
+
+安装
+
+npm install --save redux react-redux
 
 状态容器，提供可预测化的状态管理
 
@@ -517,7 +617,7 @@ import { legacy_createStore as createStore } from "redux";
 // index.js
 import React from 'react'
 import ReactDOM from 'react-dom'
-import TodoApp from './TodoApp'
+import TodoApp fSrom './TodoApp'
 
 import { Provider } from 'react-redux'
 import store from './redux/store'
@@ -603,11 +703,11 @@ Reducers 指定了应用状态的变化响应 actions 并发送到 store
 
 不能在 reducer 做的操作：
 
-​ 修改传入参数
+ 修改传入参数
 
-​ 执行有副作用的操作，如 API 请求和路由跳转
+ 执行有副作用的操作，如 API 请求和路由跳转
 
-​ 调用非纯函数，如 Date.now()或 Math.random()
+ 调用非纯函数，如 Date.now()或 Math.random()
 
 ## 规则
 
@@ -669,6 +769,49 @@ export const fetchUser = (id) => async (dispatch) => {
 
 迭代遍历处理数组或对象元素
 
+## _.omit
+
+不会改变原始的值
+
+```javascript
+var object = { 'a': 1, 'b': '2', 'c': 3 };
+ 
+_.omit(object, ['a', 'c']);
+// => { 'b': '2' }
+```
+
+## _.mapKeys
+
+```
+// Requiring the lodash library   
+const _ = require("lodash"); 
+  
+// Using the _.mapKeys() method  
+console.log( 
+  _.mapKeys({ 'cpp':15, 'java':40, 'python':63 }, 
+      function(value, key) { 
+          return  key + value ; 
+  } 
+));
+```
+
+**输出：**
+
+```
+{'cpp15':15, 'java40':40, 'python63':63}
+```
+
+## _.pick
+
+```
+var object = { 'a': 1, 'b': '2', 'c': 3 };
+
+_.pick(object, ['a', 'c']);
+// => { 'a': 1, 'c': 3 }
+```
+
+
+
 # router
 
 安装
@@ -700,3 +843,187 @@ exact
 1.未使用 exact 2.使用 exact
 
 ![image-20221203123827962](C:\Users\包子\AppData\Roaming\Typora\typora-user-images\image-20221203123827962.png)![image-20221203123949551](C:\Users\包子\AppData\Roaming\Typora\typora-user-images\image-20221203123949551.png)
+
+
+
+错误
+
+![image-20221205152805559](C:\Users\包子\AppData\Roaming\Typora\typora-user-images\image-20221205152805559.png)
+
+不应该在路由器之外使用链接元素
+
+       Uncaught Error: Invariant failed: You should not use <Link> outside a <Router>
+
+![image-20221205150831177](C:\Users\包子\AppData\Roaming\Typora\typora-user-images\image-20221205150831177.png)
+
+
+
+
+
+# Google API
+
+## OAuth 2.0
+
+https://developers.google.com/identity/protocols/oauth2/scopes
+
+```html
+<!-- google api网址 -->    
+<script src="https://apis.google.com/js/api.js"></script>
+```
+
+控制台输入 gapi
+
+![image-20221206094739128](C:\Users\包子\AppData\Roaming\Typora\typora-user-images\image-20221206094739128.png)
+
+
+
+```javascript
+//控制台
+const auth = gapi.auth2.getAuthInstance().signOut()
+gapi.auth2.getAuthInstance().isSignedIn
+```
+
+
+
+## 所遇问题
+
+实施 OAuth 2.0 时 idpiframe_initialization_failed
+
+Google登录错误:"popup_closed_by_user"
+
+### 解决
+
+**必须在范围后添加 plugin_name**
+
+```react
+ window.gapi.load("client:auth2", () => {
+      window.gapi.client
+        .init({
+          clientId:
+            "44794539137-hn1ejcif77cu967bqme541vjjseipcbj.apps.googleusercontent.com",
+          scope: "email",
+          plugin_name: "PLUGIN",//添加plugin_name
+        })
+        .then(() => {
+          this.auth = window.gapi.auth2.getAuthInstance();
+          this.setState({ isSignedIn: this.auth.isSignedIn.get() });
+        });
+    });
+```
+
+
+
+# redux form
+
+## 安装
+
+https://blog.npmjs.org/post/626173315965468672/npm-v7-series-beta-release-and-semver-major
+
+```
+npm install redux-form --legacy-peer-deps
+```
+
+react-redux版本降下来
+
+```
+"react-redux":"^7.0.0",
+```
+
+
+
+## 初始配置
+
+```react
+import { createStore, combineReducers } from 'redux'
+import { reducer } from 'redux-form'
+
+const rootReducer = combineReducers({
+    // ...其他的reducer
+    form: reducer       // redux-form中的key必须声明为form
+})
+
+const store = createStore(rootReducer)
+
+export default store
+
+```
+
+
+
+## Field组件
+
+```react
+<Field name component ="" />
+```
+
+
+
+# semantic-ui UI库
+
+**问题 (自带display:none)**
+
+```
+className="ui error message"
+```
+
+**解决(外部div)**
+
+```
+className="field error"
+```
+
+
+
+# api
+
+```
+初始化
+npm init //package.json
+安装
+npm install --save json-server
+```
+
+package.json
+
+```
+"start": "json-server -p 3001 -w db.json"
+```
+
+db.json
+
+```
+{
+  "streams": []
+}
+```
+
+
+
+create stream
+
+```
+import axios from "axios";
+
+export default axios.create({
+  baseURL: "http://localhost:3000",
+});
+
+```
+
+
+
+```
+// 请求数据
+export const createStream = (formValues) => async (dispatch) => {
+  streams.post("/streams", formValues);
+};
+```
+
+
+
+## put 与patch请求
+
+### PATCH 方法
+
+PATCH方法是新引入的，是对PUT方法的补充，用来对已知资源进行**局部更新**
+
